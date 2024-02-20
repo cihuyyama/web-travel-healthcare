@@ -24,6 +24,7 @@ async function useGetALL({ endpoint }: props) {
             toast.error('You are not authorized to view this page');
         }
         const data = await response.json();
+        console.log(data)
         
         return data;
     } catch (error) {
