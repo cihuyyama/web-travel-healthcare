@@ -1,5 +1,4 @@
-import Image from "next/image";
-import LoginPage from "./login/page";
+import LoginPage from "./auth/page";
 
 export default function Home() {
   return (
