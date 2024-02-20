@@ -1,14 +1,13 @@
-import fetcher from '@/lib/fetcher'
+
 import { BASE_URL } from '@/types/BaseURL';
-import axios from 'axios'
-import { cookies } from 'next/headers';
-import useSWR from 'swr'
+import { toast } from 'sonner';
 
 interface props {
     endpoint: string
 }
 
 async function useGetALL({ endpoint }: props) {
+    let status = 0
     try {
         const cookieValue = document.cookie.split('; ')
             .find(row => row.startsWith('token='))
@@ -19,10 +18,16 @@ async function useGetALL({ endpoint }: props) {
                 'Authorization': `Bearer ${cookieValue}`,
             }
         });
+        status = response.status
+        if (status === 401 || status === 400) {
+            window.location.href = '/auth';
+            toast.error('You are not authorized to view this page');
+        }
         const data = await response.json();
+        
         return data;
     } catch (error) {
-        console.error(error);
+        
         return error;
     }
 }

@@ -7,6 +7,7 @@ import useGetAll from "@/hooks/useGetAll";
 import Sidebar, { SidebarItem } from "@/components/SideBar";
 import { BarChartIcon, HomeIcon, UserIcon } from "lucide-react";
 import { Disease } from "@/types/Disease";
+import SideBarList from "@/components/SideBarList";
 
 const Dashboard = () => {
   const [data, setData] = useState<Disease[]>([]);
@@ -16,7 +17,7 @@ const Dashboard = () => {
       try {
         // eslint-disable-next-line react-hooks/rules-of-hooks
         const response = await useGetAll({ endpoint: "/diseases"});
-        setData(response.data); // Set the fetched data to the state
+        setData(response.data);
       } catch (error) {
         console.error("Error fetching disease data:", error);
       }
@@ -28,11 +29,7 @@ const Dashboard = () => {
   return (
     <main className="flex flex-row">
       <div className="w-fit h-full">
-        <Sidebar>
-          <SidebarItem icon={<HomeIcon />} text="Dashboard" active />
-          <SidebarItem icon={<BarChartIcon />} text="Statistics" />
-          <SidebarItem icon={<UserIcon />} text="Users" />
-        </Sidebar>
+        <SideBarList />
       </div>
       <div className="container mx-auto py-10">
         <DataTable columns={diseaseColumns} data={data} />

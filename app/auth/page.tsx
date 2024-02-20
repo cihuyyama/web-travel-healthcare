@@ -3,9 +3,11 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import useLogin from "@/hooks/useLogin";
+import { BASE_URL } from "@/types/BaseURL";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
-import React, { use, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 function LoginPage() {
   const {
@@ -22,6 +24,34 @@ function LoginPage() {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+  
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      let status = 0
+      try {
+        const cookieValue = document.cookie.split('; ')
+            .find(row => row.startsWith('token='))
+            ?.split('=')[1];
+        const response = await fetch(`${BASE_URL}/users`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${cookieValue}`,
+            }
+        });
+        status = response.status
+        if (status === 200) {
+            window.location.href = '/dashboard';
+            toast.info('You are already logged in');
+        }
+        return status;
+    } catch (error) {
+        return error;
+    }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <section className="min-h-screen flex items-center justify-center">

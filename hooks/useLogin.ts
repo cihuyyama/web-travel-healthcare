@@ -1,6 +1,7 @@
 import { BASE_URL } from '@/types/BaseURL';
 import { redirect, useRouter } from 'next/navigation';
 import { useState, ChangeEvent, FormEvent, use } from 'react';
+import { toast } from 'sonner';
 
 interface LoginState {
   email: string;
@@ -50,13 +51,18 @@ const useLogin = (): LoginState & LoginHandlers => {
 
       if (response.ok) {
         document.cookie = `token=${data.token}`;
+        toast.success('Logged in successfully');
         router.push('/dashboard');
+      } else {
+        toast.error('Error logging in');
       }
     } catch (error) {
       setError(String(error));
       console.error('outside ' + error);
     } finally {
-      setLoading(false);
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
     }
   };
 
