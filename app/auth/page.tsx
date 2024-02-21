@@ -41,7 +41,7 @@ function LoginPage() {
         });
         status = response.status
         if (status === 200) {
-            window.location.href = '/dashboard';
+            window.location.href = '/diseases';
             toast.info('You are already logged in');
         }
         return status;

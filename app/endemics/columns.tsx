@@ -12,6 +12,18 @@ import { Copy, MoreHorizontal, Pencil } from "lucide-react";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { ChangeEvent, FormEvent, useState, useTransition } from "react";
 import useUpdate from "@/hooks/useUpdate";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+
 
 
 
@@ -74,71 +86,93 @@ export const endemicColumn: ColumnDef<Endemic>[] = [
 
             return (
                 <Sheet>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Open menu</span>
-                                <Pencil className="h-5 w-5" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>
-                                <span className="text-lg">Action</span>
-                            </DropdownMenuLabel>
-                            <DropdownMenuItem className="w-fit cursor-pointer"
-                                onClick={() => navigator.clipboard.writeText(endemic.country_name)}
-                            >
-                                <Copy  />
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>
-                                <SheetTrigger asChild>
+                    <AlertDialog>
+
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                    <span className="sr-only">Open menu</span>
+                                    <Pencil className="h-5 w-5" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>
+                                    <span className="text-lg">Action</span>
+                                </DropdownMenuLabel>
+                                <DropdownMenuItem className="w-fit cursor-pointer"
+                                    onClick={() => navigator.clipboard.writeText(endemic.country_name)}
+                                >
+                                    <Copy />
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem>
+                                    <SheetTrigger asChild>
+                                        <Button className="w-full flex justify-start px-0" variant="ghost">
+                                            Edit Endemics
+                                        </Button>
+                                    </SheetTrigger>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
                                     <Button className="w-full flex justify-start px-0" variant="ghost">
-                                        Edit Endemics
+                                        Edit Disease over Endemics
                                     </Button>
-                                </SheetTrigger>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <Button className="w-full flex justify-start px-0" variant="ghost">
-                                    Edit Disease over Endemics
-                                </Button>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <Button className="w-full flex justify-start px-0" variant="ghost">
-                                    Delete
-                                </Button>
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                    <SheetContent>
-                        <form onSubmit={onSubmitEdit}>
-                            <SheetHeader>
-                                <SheetTitle>Edit Endemicity</SheetTitle>
-                                <SheetDescription>
-                                    Make changes to your endemic here. Click save when youre done.
-                                </SheetDescription>
-                            </SheetHeader>
-                            <div className="grid gap-4 py-4">
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="province" className="text-right">
-                                        Province Name
-                                    </Label>
-                                    <Input id="province" value={province} onChange={handleProvinceChange} className="col-span-3" />
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+
+                                    <AlertDialogTrigger className="w-full">
+                                        <Button className="w-full flex justify-start px-0" variant="ghost">
+                                            Delete
+                                        </Button>
+                                    </AlertDialogTrigger>
+
+
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                        <SheetContent>
+                            <form onSubmit={onSubmitEdit}>
+                                <SheetHeader>
+                                    <SheetTitle>Edit Endemicity</SheetTitle>
+                                    <SheetDescription>
+                                        Make changes to your endemic here. Click save when youre done.
+                                    </SheetDescription>
+                                </SheetHeader>
+                                <div className="grid gap-4 py-4">
+                                    <div className="grid grid-cols-4 items-center gap-4">
+                                        <Label htmlFor="province" className="text-right">
+                                            Province Name
+                                        </Label>
+                                        <Input id="province" value={province} onChange={handleProvinceChange} className="col-span-3" />
+                                    </div>
+                                    <div className="grid grid-cols-4 items-center gap-4">
+                                        <Label htmlFor="risk" className="text-right">
+                                            Weight Level
+                                        </Label>
+                                        <Input id="risk" value={risk} onChange={handleRiskChange} className="col-span-3" />
+                                    </div>
                                 </div>
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="risk" className="text-right">
-                                        Weight Level
-                                    </Label>
-                                    <Input id="risk" value={risk} onChange={handleRiskChange} className="col-span-3" />
-                                </div>
-                            </div>
-                            <SheetFooter>
-                                <SheetClose asChild>
-                                    <Button type="submit">Save changes</Button>
-                                </SheetClose>
-                            </SheetFooter>
-                        </form>
-                    </SheetContent>
+                                <SheetFooter>
+                                    <SheetClose asChild>
+                                        <Button type="submit">Save changes</Button>
+                                    </SheetClose>
+                                </SheetFooter>
+                            </form>
+                        </SheetContent>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This action cannot be undone. This will permanently delete the endemic
+                                    and remove data from our servers.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction>Continue</AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+
                 </Sheet>
 
             )
