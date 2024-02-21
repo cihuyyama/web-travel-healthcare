@@ -24,6 +24,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import useDelete from "@/hooks/useDelete";
+import { toast } from "sonner";
 
 
 
@@ -125,7 +126,10 @@ export const endemicColumn: ColumnDef<Endemic>[] = [
                                     <span className="text-lg">Action</span>
                                 </DropdownMenuLabel>
                                 <DropdownMenuItem className="w-fit cursor-pointer"
-                                    onClick={() => navigator.clipboard.writeText(endemic.country_name)}
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(endemic.country_name)
+                                        toast.success(`${endemic.country_name} Copied to clipboard`)
+                                    }}
                                 >
                                     <Copy />
                                 </DropdownMenuItem>

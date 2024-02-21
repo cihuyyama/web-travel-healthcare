@@ -6,10 +6,7 @@ import useGetALL from '@/hooks/useGetAll';
 import { endemicColumn } from './columns';
 import { Endemic } from '@/types/Endemic';
 import { DataTable } from './data-table';
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 function Endemicity() {
     const [data, setData] = useState<Endemic[]>([]);
@@ -29,13 +26,13 @@ function Endemicity() {
     }, []);
 
     return (
-        <main className="flex flex-row">
-                <div className="w-fit h-full relative">
+        <main className="flex flex-row h-screen">
+                <div className="w-fit h-full">
                     <SideBarList />
                 </div>
-                <div className="container mx-auto py-10 overflow-y-scroll no-scrollbar">
+                <ScrollArea className="w-full px-10 mx-auto py-10 h-screen">
                     <DataTable columns={endemicColumn} data={data} />
-                </div>
+                </ScrollArea>
         </main>
     );
 }

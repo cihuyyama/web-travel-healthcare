@@ -8,6 +8,7 @@ import Sidebar, { SidebarItem } from "@/components/SideBar";
 import { BarChartIcon, HomeIcon, UserIcon } from "lucide-react";
 import { Disease } from "@/types/Disease";
 import SideBarList from "@/components/SideBarList";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const Dashboard = () => {
   const [data, setData] = useState<Disease[]>([]);
@@ -31,9 +32,9 @@ const Dashboard = () => {
       <div className="w-fit h-full">
         <SideBarList />
       </div>
-      <div className="container mx-auto py-10 h-screen overflow-y-scroll">
+      <ScrollArea className="w-full px-10 mx-auto py-10 h-screen">
         <DataTable columns={diseaseColumns} data={data} />
-      </div>
+      </ScrollArea>
     </main>
   );
 }
