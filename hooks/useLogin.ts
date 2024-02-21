@@ -50,7 +50,7 @@ const useLogin = (): LoginState & LoginHandlers => {
           success: async (response) => {
             const data = await response.json();
             document.cookie = `token=${data.token}`;
-            router.push('/dashboard');
+            router.push('/diseases');
             return 'Logged in successfully';
           },
           error: 'Error logging in'
