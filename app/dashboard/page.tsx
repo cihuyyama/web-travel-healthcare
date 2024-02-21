@@ -31,7 +31,7 @@ const Dashboard = () => {
       <div className="w-fit h-full">
         <SideBarList />
       </div>
-      <div className="container mx-auto py-10">
+      <div className="container mx-auto py-10 h-screen overflow-y-scroll">
         <DataTable columns={diseaseColumns} data={data} />
       </div>
     </main>

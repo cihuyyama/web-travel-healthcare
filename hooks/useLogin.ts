@@ -37,25 +37,24 @@ const useLogin = (): LoginState & LoginHandlers => {
     setError(null);
 
     try {
-      const response = await fetch(`${BASE_URL}/users/login`, {
-        method: 'POST',
-        body: JSON.stringify({ email, password }),
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      })
-
-      const data = await response.json();
-
-      console.log(data);
-
-      if (response.ok) {
-        document.cookie = `token=${data.token}`;
-        toast.success('Logged in successfully');
-        router.push('/dashboard');
-      } else {
-        toast.error('Error logging in');
-      }
+      toast.promise(
+        fetch(`${BASE_URL}/users/login`, {
+          method: 'POST',
+          body: JSON.stringify({ email, password }),
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }),
+        {
+          loading: 'Logging in...',
+          success: async (response) => {
+            const data = await response.json();
+            document.cookie = `token=${data.token}`;
+            router.push('/dashboard');
+            return 'Logged in successfully';
+          },
+          error: 'Error logging in'
+        })
     } catch (error) {
       setError(String(error));
       console.error('outside ' + error);
