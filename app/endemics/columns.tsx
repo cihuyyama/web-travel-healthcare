@@ -23,6 +23,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import useDelete from "@/hooks/useDelete";
 
 
 
@@ -73,6 +74,14 @@ export const endemicColumn: ColumnDef<Endemic>[] = [
                     param: endemic.id,
                     province: province,
                     risk: risk
+                })
+                location.reload();
+            }
+
+            const onClickDelete = () => {
+                useDelete({
+                    endpoint: "/endemics",
+                    param: endemic.id
                 })
                 location.reload();
             }
@@ -167,8 +176,12 @@ export const endemicColumn: ColumnDef<Endemic>[] = [
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction>Continue</AlertDialogAction>
+                                <AlertDialogCancel>
+                                    Cancel
+                                </AlertDialogCancel>
+                                <AlertDialogAction onClick={onClickDelete}>
+                                    Delete
+                                </AlertDialogAction>
                             </AlertDialogFooter>
                         </AlertDialogContent>
                     </AlertDialog>
