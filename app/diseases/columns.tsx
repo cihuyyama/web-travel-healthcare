@@ -74,8 +74,14 @@ export const exampleData: Disease[] = [
 
 export const diseaseColumns: ColumnDef<Disease>[] = [
   {
-    header: "ID",
-    accessorKey: "id",
+    header: "No.",
+        cell: ({ row }) => {
+            return (
+                <div className="flex items-center">
+                    <span>{row.index + 1}</span>
+                </div>
+            );
+        },
   },
   {
     header: "Disease Name",

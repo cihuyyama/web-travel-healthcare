@@ -30,7 +30,7 @@ function Endemicity() {
 
     return (
         <main className="flex flex-row">
-                <div className="w-fit h-full">
+                <div className="w-fit h-full relative">
                     <SideBarList />
                 </div>
                 <div className="container mx-auto py-10 overflow-y-scroll no-scrollbar">

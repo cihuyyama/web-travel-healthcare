@@ -8,7 +8,7 @@ import { SheetTrigger } from "@/components/ui/sheet";
 import { Disease } from "@/types/Disease";
 import { Endemic } from "@/types/Endemic";
 import { CellContext, ColumnDef } from "@tanstack/react-table";
-import { Copy, MoreHorizontal, Pencil } from "lucide-react";
+import { ArrowUpDown, Copy, MoreHorizontal, Pencil } from "lucide-react";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { ChangeEvent, FormEvent, useState, useTransition } from "react";
 import useUpdate from "@/hooks/useUpdate";
@@ -30,12 +30,28 @@ import useDelete from "@/hooks/useDelete";
 
 export const endemicColumn: ColumnDef<Endemic>[] = [
     {
-        header: "ID",
-        accessorKey: "id",
+        header: "No.",
+        cell: ({ row }) => {
+            return (
+                <div className="flex items-center">
+                    <span>{row.index + 1}</span>
+                </div>
+            );
+        },
     },
     {
-        header: "Provice Name",
         accessorKey: "country_name",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Province Name
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            )
+        },
     },
     {
         header: "Weight Level",

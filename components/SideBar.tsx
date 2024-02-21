@@ -58,7 +58,7 @@ export default function Sidebar({ children }: { children: ReactNode }) {
           <ul className="flex-1 px-3 flex flex-col items-center">{children}</ul>
         </SidebarContext.Provider>
 
-        <div className="flex w-full px-3 mb-4">
+        <div className="flex w-full px-3 mb-4 ">
           <Link onClick={delete_cookie} href='/auth'
             className={`
         relative flex items-center py-2 px-3 my-1
