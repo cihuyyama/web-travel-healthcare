@@ -83,7 +83,6 @@ export function DataTable<TData, TValue>({
       country_name: province,
       risk_level: risk,
     })
-    location.reload();
   }
 
 

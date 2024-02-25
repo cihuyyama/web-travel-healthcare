@@ -28,6 +28,9 @@ function useCreate({ endpoint }: props, { country_name, risk_level }: endemicCre
             {
                 loading: 'Saving...',
                 success: () => {
+                    setTimeout(() => {
+                        location.reload();
+                    }, 500);
                     return 'Saved successfully';
                 },
                 error: 'Error Saving'

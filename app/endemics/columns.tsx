@@ -92,7 +92,6 @@ export const endemicColumn: ColumnDef<Endemic>[] = [
                     province: province,
                     risk: risk
                 })
-                location.reload();
             }
 
             const onClickDelete = async () => {
@@ -100,7 +99,6 @@ export const endemicColumn: ColumnDef<Endemic>[] = [
                     endpoint: "/endemics",
                     param: endemic.id
                 })
-                location.reload();
             }
 
             const handleProvinceChange = (e: ChangeEvent<HTMLInputElement>) => {

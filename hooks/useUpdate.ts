@@ -25,6 +25,9 @@ async function useUpdate({ endpoint, param, province, risk }: props) {
             {
                 loading: 'Saving...',
                 success:  () => {
+                    setTimeout(() => {
+                        location.reload();
+                    }, 500);
                     return 'Updated successfully';
                 },
                 error: 'Error updating'

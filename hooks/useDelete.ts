@@ -22,6 +22,9 @@ function useDelete({ endpoint, param }: props) {
             {
                 loading: 'Deleting...',
                 success:  () => {
+                    setTimeout(() => {
+                        location.reload();
+                    }, 500);
                     return 'Deleted Successfully';
                 },
                 error: 'Error deleting'
