@@ -84,9 +84,9 @@ export const endemicColumn: ColumnDef<Endemic>[] = [
             const [province, setProvince] = useState(endemic.country_name);
             const [risk, setRisk] = useState(endemic.risk_level);
 
-            const onSubmitEdit = (e: FormEvent<HTMLFormElement>) => {
+            const onSubmitEdit = async (e: FormEvent<HTMLFormElement>) => {
                 e.preventDefault();
-                useUpdate({
+                await useUpdate({
                     endpoint: "/endemics",
                     param: endemic.id,
                     province: province,
@@ -95,8 +95,8 @@ export const endemicColumn: ColumnDef<Endemic>[] = [
                 location.reload();
             }
 
-            const onClickDelete = () => {
-                useDelete({
+            const onClickDelete = async () => {
+                 await useDelete({
                     endpoint: "/endemics",
                     param: endemic.id
                 })

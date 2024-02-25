@@ -75,9 +75,9 @@ export function DataTable<TData, TValue>({
   const [province, setProvince] = useState("");
   const [risk, setRisk] = useState("");
 
-  const onSubmitCreate = (e: FormEvent<HTMLFormElement>) => {
+  const onSubmitCreate = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    useCreate({
+    await useCreate({
       endpoint: "/endemics",
     }, {
       country_name: province,
