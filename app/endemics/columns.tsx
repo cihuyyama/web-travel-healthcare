@@ -59,6 +59,10 @@ export const endemicColumn: ColumnDef<Endemic>[] = [
         accessorKey: "risk_level",
     },
     {
+        header: "Risk Score",
+        accessorKey: "risk_score",
+    },
+    {
         header: "Diseases",
         accessorKey: "DiseaseEndemic",
         cell: (row: CellContext<Endemic, unknown>) => {
