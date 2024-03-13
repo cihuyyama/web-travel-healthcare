@@ -5,6 +5,7 @@ export type Endemic = {
     DiseaseEndemic: Disease[];
     country_name: string;
     risk_level: string;
+    risk_score: number;
     created_at: string;
     updated_at: string;
   }

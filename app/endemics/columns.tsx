@@ -61,6 +61,15 @@ export const endemicColumn: ColumnDef<Endemic>[] = [
     {
         header: "Risk Score",
         accessorKey: "risk_score",
+        cell: (row: CellContext<Endemic, unknown>) => {
+            const RiskCell: React.FC<{ risk: number }> = ({ risk }) => (
+                <div className="h-full flex items-center gap-1">
+                    <span>{risk}</span>
+                    <ArrowUpDown className="h-4 w-4" />
+                </div>
+            );
+            return <RiskCell risk={row.row.original.risk_score} />;
+        },
     },
     {
         header: "Diseases",
