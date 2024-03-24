@@ -12,79 +12,68 @@ import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHe
 import { Textarea } from "@/components/ui/textarea";
 import useDelete from "@/hooks/useDelete";
 import { BASE_URL } from "@/types/BaseURL";
-import { Disease, Symptom } from "@/types/Disease";
+import { Disease, Prevention, Symptom, Treatment } from "@/types/Disease";
 import { CellContext, ColumnDef } from "@tanstack/react-table";
 import { Copy, Pencil } from "lucide-react";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { toast } from "sonner";
 
-export const exampleData: Disease[] = [
+export const diseaseColumns2: ColumnDef<Disease>[] = [
   {
-    id: 1,
-    disease_name: "DBD new",
-    disease_desc: "demam berdarah",
-    DiseaseSymptom: [
-      {
-        id: 2,
-        symptom_name: "Demam",
-        symptom_char: "terus menerus",
-      },
-      {
-        id: 3,
-        symptom_name: "mual",
-        symptom_char: "sakit perut",
-      },
-    ],
-    Treatment: [
-      {
-        id: 2,
-        disease_id: 1,
-        title: "judul new",
-        description: "deskripsinya",
-        created_at: "2024-01-22T01:13:10.362+07:00",
-        updated_at: "2024-01-22T01:13:10.362+07:00",
-      },
-      {
-        id: 3,
-        disease_id: 1,
-        title: "judul new",
-        description: "deskripsinya",
-        created_at: "2024-01-22T01:13:30.557+07:00",
-        updated_at: "2024-01-22T01:13:30.557+07:00",
-      },
-      {
-        id: 4,
-        disease_id: 1,
-        title: "judul",
-        description: "deskripsinya",
-        created_at: "2024-01-22T01:30:48.375+07:00",
-        updated_at: "2024-01-22T01:30:48.375+07:00",
-      },
-    ],
-    Prevention: [
-      {
-        id: 2,
-        disease_id: 1,
-        title: "judul",
-        description: "deskripsinya",
-        created_at: "2024-01-22T01:30:36.031+07:00",
-        updated_at: "2024-01-22T01:30:36.031+07:00",
-      },
-    ],
-    created_at: "2024-01-07T14:20:53.326+07:00",
-    updated_at: "2024-01-26T16:00:04.867+07:00",
+    header: "No.",
+    cell: ({ row }) => {
+      return (
+        <div className="flex items-center">
+          <span>{row.index + 1}</span>
+        </div>
+      );
+    },
   },
   {
-    id: 2,
-    disease_name: "Malaria",
-    disease_desc: "malaria",
-    DiseaseSymptom: [],
-    Treatment: [],
-    Prevention: [],
-    created_at: "2024-01-18T00:53:21.474+07:00",
-    updated_at: "2024-01-18T00:53:21.474+07:00",
+    header: "Name",
+    accessorKey: "disease_name",
   },
-];
+  {
+    header: "Prevention",
+    accessorKey: "Prevention",
+    cell: (row: CellContext<Disease, unknown>) => {
+      const PreventionCell: React.FC<{ preventions: Prevention[] }> = ({ preventions }) => (
+
+        <ScrollArea className="h-[100px]">
+          <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
+            {preventions.map((prevention) => (
+              <li key={prevention.id}>
+                {prevention.description}
+              </li>
+            ))}
+          </ul>
+        </ScrollArea>
+
+      );
+      return <PreventionCell preventions={row.row.original.Prevention} />;
+    },
+  },
+  {
+    header: "Treatment",
+    accessorKey: "Treatment",
+    cell: (row: CellContext<Disease, unknown>) => {
+      const TreatmentCell: React.FC<{ treatments: Treatment[] }> = ({ treatments }) => (
+
+        <ScrollArea className="h-[100px]">
+          <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
+            {treatments.map((treatment) => (
+              <li key={treatment.id}>
+                {treatment.description}
+              </li>
+            ))}
+          </ul>
+        </ScrollArea>
+
+      );
+      return <TreatmentCell treatments={row.row.original.Treatment} />;
+    },
+  },
+]
 
 export const diseaseColumns: ColumnDef<Disease>[] = [
   {
@@ -165,13 +154,13 @@ export const diseaseColumns: ColumnDef<Disease>[] = [
       }
 
       const onClickDelete = () => {
-        if(disease.DiseaseSymptom.length < 1){
+        if (disease.DiseaseSymptom.length < 1) {
           useDelete({
             endpoint: "/diseases",
             param: disease.id
           })
           location.reload();
-        }  else {
+        } else {
           toast.info(`Disease has symptoms, cannot be deleted`)
         }
       }
