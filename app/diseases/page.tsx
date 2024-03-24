@@ -4,8 +4,6 @@ import React, { useEffect, useState } from "react";
 import { diseaseColumns, exampleData } from "./columns";
 import { DataTable } from "./data-table";
 import useGetAll from "@/hooks/useGetAll";
-import Sidebar, { SidebarItem } from "@/components/SideBar";
-import { BarChartIcon, HomeIcon, UserIcon } from "lucide-react";
 import { Disease } from "@/types/Disease";
 import SideBarList from "@/components/SideBarList";
 import { ScrollArea } from "@/components/ui/scroll-area";

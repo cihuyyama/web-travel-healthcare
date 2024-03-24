@@ -63,9 +63,8 @@ export const endemicColumn: ColumnDef<Endemic>[] = [
         accessorKey: "risk_score",
         cell: (row: CellContext<Endemic, unknown>) => {
             const RiskCell: React.FC<{ risk: number }> = ({ risk }) => (
-                <div className="h-full flex items-center gap-1">
+                <div className={`flex justify-center pr-3 ${risk>70 ? 'text-red-400' : ''}`}>
                     <span>{risk}</span>
-                    <ArrowUpDown className="h-4 w-4" />
                 </div>
             );
             return <RiskCell risk={row.row.original.risk_score} />;

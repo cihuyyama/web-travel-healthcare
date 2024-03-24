@@ -9,7 +9,7 @@ interface props {
 async function useGetALL({ endpoint }: props) {
     let status = 0
     try {
-        const cookieValue = document.cookie.split('; ')
+        const cookieValue = document.cookie.split(';')
             .find(row => row.startsWith('token='))
             ?.split('=')[1];
         const response = await fetch(`${BASE_URL}${endpoint}`, {
