@@ -4,12 +4,12 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import React, { useEffect, useState } from 'react'
 import { DataTable } from './data-table'
 import { symptomColumn } from './column'
-import { Symptom } from '@/types/Disease'
+import { Symptom as symptom } from '@/types/Disease'
 import { BASE_URL } from '@/types/BaseURL'
 import axios from 'axios'
 
 function Symptom() {
-    const [data, setData] = useState<Symptom[]>([]);
+    const [data, setData] = useState<symptom[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {

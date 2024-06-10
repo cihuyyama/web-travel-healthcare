@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from "react";
-import { diseaseColumns, diseaseColumns2 } from "./columns";
+import { diseaseColumns } from "./columns";
 import { DataTable } from "./data-table";
 import useGetAll from "@/hooks/useGetAll";
 import { Disease } from "@/types/Disease";
@@ -36,7 +36,6 @@ const Dashboard = () => {
         </h2>
         <div className="flex flex-col mx-auto gap-8">
         <DataTable columns={diseaseColumns} data={data} />
-        <DataTable columns={diseaseColumns2} data={data} />
         </div>
       </ScrollArea>
     </main>

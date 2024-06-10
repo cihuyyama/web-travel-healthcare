@@ -15,65 +15,9 @@ import { BASE_URL } from "@/types/BaseURL";
 import { Disease, Prevention, Symptom, Treatment } from "@/types/Disease";
 import { CellContext, ColumnDef } from "@tanstack/react-table";
 import { Copy, Pencil } from "lucide-react";
+import Link from "next/link";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { toast } from "sonner";
-
-export const diseaseColumns2: ColumnDef<Disease>[] = [
-  {
-    header: "No.",
-    cell: ({ row }) => {
-      return (
-        <div className="flex items-center">
-          <span>{row.index + 1}</span>
-        </div>
-      );
-    },
-  },
-  {
-    header: "Name",
-    accessorKey: "disease_name",
-  },
-  {
-    header: "Prevention",
-    accessorKey: "Prevention",
-    cell: (row: CellContext<Disease, unknown>) => {
-      const PreventionCell: React.FC<{ preventions: Prevention[] }> = ({ preventions }) => (
-
-        <ScrollArea className="h-[100px]">
-          <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
-            {preventions.map((prevention) => (
-              <li key={prevention.id}>
-                {prevention.description}
-              </li>
-            ))}
-          </ul>
-        </ScrollArea>
-
-      );
-      return <PreventionCell preventions={row.row.original.Prevention} />;
-    },
-  },
-  {
-    header: "Treatment",
-    accessorKey: "Treatment",
-    cell: (row: CellContext<Disease, unknown>) => {
-      const TreatmentCell: React.FC<{ treatments: Treatment[] }> = ({ treatments }) => (
-
-        <ScrollArea className="h-[100px]">
-          <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
-            {treatments.map((treatment) => (
-              <li key={treatment.id}>
-                {treatment.description}
-              </li>
-            ))}
-          </ul>
-        </ScrollArea>
-
-      );
-      return <TreatmentCell treatments={row.row.original.Treatment} />;
-    },
-  },
-]
 
 export const diseaseColumns: ColumnDef<Disease>[] = [
   {
@@ -119,11 +63,11 @@ export const diseaseColumns: ColumnDef<Disease>[] = [
     cell: ({ row }) => {
       const disease = row.original
 
-      const [name, setName] = useState(disease.disease_name);
+      const [name, setPrev] = useState(disease.disease_name);
       const [desc, setDesc] = useState(disease.disease_desc);
 
       const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setName(e.target.value);
+        setPrev(e.target.value);
       };
       const handleDescChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         setDesc(e.target.value);
@@ -196,9 +140,25 @@ export const diseaseColumns: ColumnDef<Disease>[] = [
                   </SheetTrigger>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <Button className="w-full flex justify-start px-0" variant="ghost">
-                    Edit Disease over Disease
-                  </Button>
+                  <Link href={`/diseases/${disease.id}/symptoms`}>
+                    <Button className="w-full flex justify-start px-0" variant="ghost">
+                      Edit Disease Symptom
+                    </Button>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link href={`/diseases/${disease.id}/treatment`}>
+                    <Button className="w-full flex justify-start px-0" variant="ghost">
+                      Edit Disease Treatment
+                    </Button>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link href={`/diseases/${disease.id}/prevention`}>
+                    <Button className="w-full flex justify-start px-0" variant="ghost">
+                      Edit Disease Prevention
+                    </Button>
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
 
