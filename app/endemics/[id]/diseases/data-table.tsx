@@ -6,7 +6,6 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table"
 
@@ -31,29 +30,56 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Plus } from "lucide-react"
+import { Plus } from "lucide-react"
 import { Label } from "@/components/ui/label"
 import React, { FormEvent, useEffect } from "react"
-import { Symptom } from "@/types/Disease"
+import { Disease, Symptom } from "@/types/Disease"
 import { BASE_URL } from "@/types/BaseURL"
 import { toast } from "sonner"
 import { Textarea } from "@/components/ui/textarea"
 
 interface DataTableProps<TData, TValue> {
+  id: string
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
 }
 
 export function DataTable<TData, TValue>({
+  id,
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const [title, setTitle] = React.useState<string>("")
-  const [description, setDescription] = React.useState<string>("")
-
+  const [diseases, setDiseases] = React.useState<Disease[]>([])
+  const [selectedDisease, setSelectedDisease] = React.useState<number>(0)
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const cookieValue = document.cookie.split('; ')
+          .find(row => row.startsWith('token='))
+          ?.split('=')[1];
+        const response = await fetch(
+          `${BASE_URL}/diseases`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${cookieValue}`,
+            },
+          }
+        )
+        const data = await response.json();
+        setDiseases(data.data);
+      } catch (error) {
+        console.error("Error fetching disease data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const table = useReactTable({
     data,
@@ -61,7 +87,6 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     state: {
       columnFilters,
     }
@@ -76,16 +101,16 @@ export function DataTable<TData, TValue>({
 
     try {
       toast.promise(
-        fetch(`${BASE_URL}/symptoms`, {
+        fetch(`${BASE_URL}/diseases/append`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${cookieValue}`,
           },
-          body: JSON.stringify({
-            "symptom_name": title,
-            "symptom_char": description,
-          })
+          body: JSON.stringify({ 
+            "disease_id": selectedDisease,
+            "endemic_id": parseInt(id),
+           })
         }),
         {
           loading: 'Saving...',
@@ -98,7 +123,7 @@ export function DataTable<TData, TValue>({
           error: 'Error Saving'
         }
       )
-
+      
     } catch (e) {
       console.error(e)
     }
@@ -110,16 +135,16 @@ export function DataTable<TData, TValue>({
       <div className="flex flex-row justify-between items-center">
         <div className="flex items-center py-4">
           <Input
-            placeholder="Search Symptom Name"
-            value={(table.getColumn("symptom_name")?.getFilterValue() as string) ?? ""}
+            placeholder="Search Treatment Name"
+            value={(table.getColumn("disease_name")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
-              table.getColumn("symptom_name")?.setFilterValue(event.target.value)
+              table.getColumn("disease_name")?.setFilterValue(event.target.value)
             }
             className="w-[400px]"
           />
         </div>
         <div>
-          <Dialog>
+        <Dialog>
             <DialogTrigger asChild>
               <Button variant={"default"}>
                 <Plus />
@@ -128,24 +153,37 @@ export function DataTable<TData, TValue>({
             <DialogContent className="sm:max-w-[425px]">
               <form onSubmit={onSubmitCreate}>
                 <DialogHeader>
-                  <DialogTitle>Add New Symptom</DialogTitle>
+                  <DialogTitle>Add New Disease</DialogTitle>
                   <DialogDescription>
-                    Add a new Symptom to the Disease
+                    Add a new Disease to the Endemicity
                   </DialogDescription>
                 </DialogHeader>
                 <div className="flex flex-col gap-4 py-4">
-                  <Label>Name</Label>
-                  <Input
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Enter the name of the symptom"
-                  />
-                  <Label>Description</Label>
-                  <Textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Enter the description of the symptom"
-                  />
+                  <Select onValueChange={(event) => {
+                    setSelectedDisease(parseInt(event))
+                  }}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select Disease" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {diseases.map((disease) => (
+                        <SelectItem
+                          key={disease.id}
+                          value={disease.id.toString()}
+                        >
+                          {disease.disease_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <div>
+                    <span>
+                      Deskripsi :
+                    </span>
+                    <div className="border-2 rounded-md w-full h-full min-h-[150px] text-sm">
+                      {diseases.find((disease) => disease.id === selectedDisease)?.disease_desc ? diseases.find((disease) => disease.id === selectedDisease)?.disease_desc : "No Description"}
+                    </div>
+                  </div>
                 </div>
                 <DialogFooter>
                   <Button type="submit">Add</Button>
@@ -203,77 +241,6 @@ export function DataTable<TData, TValue>({
             )}
           </TableBody>
         </Table>
-      </div>
-
-      <div className="flex items-center justify-between px-2 mt-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="flex items-center space-x-6 lg:space-x-8">
-          <div className="flex items-center space-x-2">
-            <p className="text-sm font-medium">Rows per page</p>
-            <Select
-              value={`${table.getState().pagination.pageSize}`}
-              onValueChange={(value) => {
-                table.setPageSize(Number(value))
-              }}
-            >
-              <SelectTrigger className="h-8 w-[70px]">
-                <SelectValue placeholder={table.getState().pagination.pageSize} />
-              </SelectTrigger>
-              <SelectContent side="top">
-                {[10, 20, 30, 40, 50].map((pageSize) => (
-                  <SelectItem key={pageSize} value={`${pageSize}`}>
-                    {pageSize}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
-          </div>
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              className="hidden h-8 w-8 p-0 lg:flex"
-              onClick={() => table.setPageIndex(0)}
-              disabled={!table.getCanPreviousPage()}
-            >
-              <span className="sr-only">Go to first page</span>
-              <ChevronsLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              className="h-8 w-8 p-0"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              <span className="sr-only">Go to previous page</span>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              className="h-8 w-8 p-0"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              <span className="sr-only">Go to next page</span>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              className="hidden h-8 w-8 p-0 lg:flex"
-              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-              disabled={!table.getCanNextPage()}
-            >
-              <span className="sr-only">Go to last page</span>
-              <ChevronsRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
       </div>
     </div>
   )

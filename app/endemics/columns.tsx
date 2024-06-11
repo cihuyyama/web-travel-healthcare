@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import useDelete from "@/hooks/useDelete";
 import { toast } from "sonner";
+import Link from "next/link";
 
 
 
@@ -63,7 +64,7 @@ export const endemicColumn: ColumnDef<Endemic>[] = [
         accessorKey: "risk_score",
         cell: (row: CellContext<Endemic, unknown>) => {
             const RiskCell: React.FC<{ risk: number }> = ({ risk }) => (
-                <div className={`flex justify-center pr-3 ${risk>70 ? 'text-red-400' : ''}`}>
+                <div className={`flex justify-center pr-3 ${risk > 70 ? 'text-red-400' : ''}`}>
                     <span>{risk}</span>
                 </div>
             );
@@ -95,6 +96,7 @@ export const endemicColumn: ColumnDef<Endemic>[] = [
 
             const [province, setProvince] = useState(endemic.country_name);
             const [risk, setRisk] = useState(endemic.risk_level);
+            const [score, setScore] = useState(endemic.risk_score);
 
             const onSubmitEdit = async (e: FormEvent<HTMLFormElement>) => {
                 e.preventDefault();
@@ -102,12 +104,13 @@ export const endemicColumn: ColumnDef<Endemic>[] = [
                     endpoint: "/endemics",
                     param: endemic.id,
                     province: province,
-                    risk: risk
+                    risk: risk,
+                    score: score
                 })
             }
 
             const onClickDelete = async () => {
-                 await useDelete({
+                await useDelete({
                     endpoint: "/endemics",
                     param: endemic.id
                 })
@@ -118,6 +121,9 @@ export const endemicColumn: ColumnDef<Endemic>[] = [
             };
             const handleRiskChange = (e: ChangeEvent<HTMLInputElement>) => {
                 setRisk(e.target.value);
+            };
+            const handleScoreChange = (e: ChangeEvent<HTMLInputElement>) => {
+                setScore(parseInt(e.target.value));
             };
 
             return (
@@ -152,9 +158,11 @@ export const endemicColumn: ColumnDef<Endemic>[] = [
                                     </SheetTrigger>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem>
-                                    <Button className="w-full flex justify-start px-0" variant="ghost">
-                                        Edit Disease over Endemics
-                                    </Button>
+                                    <Link href={`/endemics/${endemic.id}/diseases`}>
+                                        <Button className="w-full flex justify-start px-0" variant="ghost">
+                                            Edit Disease over Endemics
+                                        </Button>
+                                    </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem>
 
@@ -185,9 +193,15 @@ export const endemicColumn: ColumnDef<Endemic>[] = [
                                     </div>
                                     <div className="grid grid-cols-4 items-center gap-4">
                                         <Label htmlFor="risk" className="text-right">
-                                            Weight Level
+                                            Risk Level
                                         </Label>
                                         <Input id="risk" value={risk} onChange={handleRiskChange} className="col-span-3" />
+                                    </div>
+                                    <div className="grid grid-cols-4 items-center gap-4">
+                                        <Label htmlFor="risk" className="text-right">
+                                            Risk Score
+                                        </Label>
+                                        <Input type="number" id="risk" value={score} onChange={handleScoreChange} className="col-span-3" />
                                     </div>
                                 </div>
                                 <SheetFooter>

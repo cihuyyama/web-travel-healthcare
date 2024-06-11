@@ -40,6 +40,8 @@ import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Plus, PlusSquar
 import { Label } from "@/components/ui/label"
 import useCreate from "@/hooks/useCreate"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { toast } from "sonner"
+import { BASE_URL } from "@/types/BaseURL"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -74,15 +76,44 @@ export function DataTable<TData, TValue>({
 
   const [province, setProvince] = useState("");
   const [risk, setRisk] = useState("");
+  const [score, setScore] = useState(70);
 
   const onSubmitCreate = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await useCreate({
-      endpoint: "/endemics",
-    }, {
-      country_name: province,
-      risk_level: risk,
-    })
+    
+    const cookieValue = document.cookie.split('; ')
+      .find(row => row.startsWith('token='))
+      ?.split('=')[1];
+
+    try {
+      toast.promise(
+        fetch(`${BASE_URL}/endemics`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${cookieValue}`,
+          },
+          body: JSON.stringify({ 
+            "province": province,
+            "risk_level": risk,
+            "risk_score": score,
+           })
+        }),
+        {
+          loading: 'Saving...',
+          success: () => {
+            setTimeout(() => {
+              location.reload();
+            }, 200);
+            return 'Saved successfully';
+          },
+          error: 'Error Saving'
+        }
+      )
+      
+    } catch (e) {
+      console.error(e)
+    }
   }
 
 
@@ -133,7 +164,7 @@ export function DataTable<TData, TValue>({
                   </div>
                   <div className="flex flex-col items-start gap-4">
                     <Label htmlFor="risk" className="text-right">
-                      Weight Level
+                      Risk Level
                     </Label>
                     <Input
                       id="risk"
@@ -141,6 +172,20 @@ export function DataTable<TData, TValue>({
                       value={risk}
                       onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
                         setRisk(event.target.value)
+                      }
+                    />
+                  </div>
+                  <div className="flex flex-col items-start gap-4">
+                    <Label htmlFor="score" className="text-right">
+                      Score Level
+                    </Label>
+                    <Input
+                      id="score"
+                      className="col-span-3"
+                      type="number"
+                      value={score}
+                      onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                        setScore(parseInt(event.target.value))
                       }
                     />
                   </div>
