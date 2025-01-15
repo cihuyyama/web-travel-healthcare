@@ -10,6 +10,15 @@ import {
 } from "@tanstack/react-table"
 
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
+
+import {
   Table,
   TableBody,
   TableCell,
@@ -23,21 +32,24 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { Label } from "@/components/ui/label"
-import React, { FormEvent } from "react"
-import { Textarea } from "@/components/ui/textarea"
-import { toast } from "sonner"
+import React, { FormEvent, useEffect } from "react"
+import { Symptom } from "@/types/Disease"
 import { BASE_URL } from "@/types/BaseURL"
+import { toast } from "sonner"
+import { Textarea } from "@/components/ui/textarea"
 
 interface DataTableProps<TData, TValue> {
+  id: string
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
 }
 
 export function DataTable<TData, TValue>({
+  id,
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const [diseaseName, setDiseaseName] = React.useState<string>("")
+  const [title, setTitle] = React.useState<string>("")
   const [description, setDescription] = React.useState<string>("")
 
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -57,35 +69,39 @@ export function DataTable<TData, TValue>({
 
   const onSubmitCreate = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const cookieValue = document.cookie.split('; ')
+      .find(row => row.startsWith('token='))
+      ?.split('=')[1];
+
     try {
-      const cookieValue = document.cookie.split('; ')
-        .find(row => row.startsWith('token='))
-        ?.split('=')[1];
       toast.promise(
-        fetch(`${BASE_URL}/diseases`, {
-          method: "POST",
+        fetch(`${BASE_URL}/treatments`, {
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${cookieValue}`,
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${cookieValue}`,
           },
-          body: JSON.stringify({
-            "disease_name": diseaseName,
-            "disease_desc": description
-          }),
+          body: JSON.stringify({ 
+            "disease_id": parseInt(id),
+            "title": title,
+            "description": description,
+           })
         }),
         {
-          loading: "Creating new Disease",
-          success: ()=>{
+          loading: 'Saving...',
+          success: () => {
             setTimeout(() => {
               location.reload();
-            }, 500);
-            return "Disease Created Successfully";
+            }, 200);
+            return 'Saved successfully';
           },
-          error: "Failed to create Disease",
+          error: 'Error Saving'
         }
       )
-    } catch (error) {
-      console.log(error)
+      
+    } catch (e) {
+      console.error(e)
     }
 
   }
@@ -95,10 +111,10 @@ export function DataTable<TData, TValue>({
       <div className="flex flex-row justify-between items-center">
         <div className="flex items-center py-4">
           <Input
-            placeholder="Search Disease Name"
-            value={(table.getColumn("disease_name")?.getFilterValue() as string) ?? ""}
+            placeholder="Search Treatment Name"
+            value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
-              table.getColumn("disease_name")?.setFilterValue(event.target.value)
+              table.getColumn("title")?.setFilterValue(event.target.value)
             }
             className="w-[400px]"
           />
@@ -113,41 +129,27 @@ export function DataTable<TData, TValue>({
             <DialogContent className="sm:max-w-[425px]">
               <form onSubmit={onSubmitCreate}>
                 <DialogHeader>
-                  <DialogTitle>Add New Disease</DialogTitle>
+                  <DialogTitle>Add New Treatment</DialogTitle>
                   <DialogDescription>
-                    Add a new Disease to the database
+                    Add a new Treatment to the Disease
                   </DialogDescription>
                 </DialogHeader>
                 <div className="flex flex-col gap-4 py-4">
-                  <div className="flex flex-col items-start gap-4">
-                    <Label htmlFor="disease" className="text-right">
-                      Disease Name
-                    </Label>
-                    <Input
-                      id="disease"
-                      className="col-span-3"
-                      value={diseaseName}
-                      onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                        setDiseaseName(event.target.value)
-                      }
-                    />
-                  </div>
-                  <div className="flex flex-col items-start gap-4">
-                    <Label htmlFor="description" className="text-right">
-                      Description
-                    </Label>
-                    <Textarea
-                      id="description"
-                      className="col-span-3"
-                      value={description}
-                      onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) =>
-                        setDescription(event.target.value)
-                      }
-                    />
-                  </div>
+                  <Label>Title</Label>
+                  <Input
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Enter the title of the treatment"
+                  />
+                  <Label>Description</Label>
+                  <Textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Enter the description of the treatment"
+                  />
                 </div>
                 <DialogFooter>
-                  <Button type="submit">Save changes</Button>
+                  <Button type="submit">Add</Button>
                 </DialogFooter>
               </form>
             </DialogContent>

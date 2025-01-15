@@ -7,9 +7,10 @@ interface props {
     param: number,
     province: string,
     risk: string
+    score: number
 }
 
-async function useUpdate({ endpoint, param, province, risk }: props) {
+async function useUpdate({ endpoint, param, province, risk, score }: props) {
     try {
         const cookieValue = document.cookie.split('; ')
             .find(row => row.startsWith('token='))
@@ -20,7 +21,7 @@ async function useUpdate({ endpoint, param, province, risk }: props) {
                 headers: {
                     'Authorization': `Bearer ${cookieValue}`,
                 },
-                body: JSON.stringify({ "province": province, "risk_level": risk})
+                body: JSON.stringify({ "province": province, "risk_level": risk, "risk_score": score})
             }),
             {
                 loading: 'Saving...',

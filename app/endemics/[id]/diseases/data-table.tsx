@@ -10,6 +10,15 @@ import {
 } from "@tanstack/react-table"
 
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
+
+import {
   Table,
   TableBody,
   TableCell,
@@ -23,26 +32,54 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { Label } from "@/components/ui/label"
-import React, { FormEvent } from "react"
-import { Textarea } from "@/components/ui/textarea"
-import { toast } from "sonner"
+import React, { FormEvent, useEffect } from "react"
+import { Disease, Symptom } from "@/types/Disease"
 import { BASE_URL } from "@/types/BaseURL"
+import { toast } from "sonner"
+import { Textarea } from "@/components/ui/textarea"
 
 interface DataTableProps<TData, TValue> {
+  id: string
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
 }
 
 export function DataTable<TData, TValue>({
+  id,
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const [diseaseName, setDiseaseName] = React.useState<string>("")
-  const [description, setDescription] = React.useState<string>("")
-
+  const [diseases, setDiseases] = React.useState<Disease[]>([])
+  const [selectedDisease, setSelectedDisease] = React.useState<number>(0)
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const cookieValue = document.cookie.split('; ')
+          .find(row => row.startsWith('token='))
+          ?.split('=')[1];
+        const response = await fetch(
+          `${BASE_URL}/diseases`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${cookieValue}`,
+            },
+          }
+        )
+        const data = await response.json();
+        setDiseases(data.data);
+      } catch (error) {
+        console.error("Error fetching disease data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const table = useReactTable({
     data,
@@ -57,35 +94,38 @@ export function DataTable<TData, TValue>({
 
   const onSubmitCreate = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const cookieValue = document.cookie.split('; ')
+      .find(row => row.startsWith('token='))
+      ?.split('=')[1];
+
     try {
-      const cookieValue = document.cookie.split('; ')
-        .find(row => row.startsWith('token='))
-        ?.split('=')[1];
       toast.promise(
-        fetch(`${BASE_URL}/diseases`, {
-          method: "POST",
+        fetch(`${BASE_URL}/diseases/append`, {
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${cookieValue}`,
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${cookieValue}`,
           },
-          body: JSON.stringify({
-            "disease_name": diseaseName,
-            "disease_desc": description
-          }),
+          body: JSON.stringify({ 
+            "disease_id": selectedDisease,
+            "endemic_id": parseInt(id),
+           })
         }),
         {
-          loading: "Creating new Disease",
-          success: ()=>{
+          loading: 'Saving...',
+          success: () => {
             setTimeout(() => {
               location.reload();
-            }, 500);
-            return "Disease Created Successfully";
+            }, 200);
+            return 'Saved successfully';
           },
-          error: "Failed to create Disease",
+          error: 'Error Saving'
         }
       )
-    } catch (error) {
-      console.log(error)
+      
+    } catch (e) {
+      console.error(e)
     }
 
   }
@@ -95,7 +135,7 @@ export function DataTable<TData, TValue>({
       <div className="flex flex-row justify-between items-center">
         <div className="flex items-center py-4">
           <Input
-            placeholder="Search Disease Name"
+            placeholder="Search Treatment Name"
             value={(table.getColumn("disease_name")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
               table.getColumn("disease_name")?.setFilterValue(event.target.value)
@@ -104,7 +144,7 @@ export function DataTable<TData, TValue>({
           />
         </div>
         <div>
-          <Dialog>
+        <Dialog>
             <DialogTrigger asChild>
               <Button variant={"default"}>
                 <Plus />
@@ -115,39 +155,38 @@ export function DataTable<TData, TValue>({
                 <DialogHeader>
                   <DialogTitle>Add New Disease</DialogTitle>
                   <DialogDescription>
-                    Add a new Disease to the database
+                    Add a new Disease to the Endemicity
                   </DialogDescription>
                 </DialogHeader>
                 <div className="flex flex-col gap-4 py-4">
-                  <div className="flex flex-col items-start gap-4">
-                    <Label htmlFor="disease" className="text-right">
-                      Disease Name
-                    </Label>
-                    <Input
-                      id="disease"
-                      className="col-span-3"
-                      value={diseaseName}
-                      onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                        setDiseaseName(event.target.value)
-                      }
-                    />
-                  </div>
-                  <div className="flex flex-col items-start gap-4">
-                    <Label htmlFor="description" className="text-right">
-                      Description
-                    </Label>
-                    <Textarea
-                      id="description"
-                      className="col-span-3"
-                      value={description}
-                      onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) =>
-                        setDescription(event.target.value)
-                      }
-                    />
+                  <Select onValueChange={(event) => {
+                    setSelectedDisease(parseInt(event))
+                  }}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select Disease" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {diseases.map((disease) => (
+                        <SelectItem
+                          key={disease.id}
+                          value={disease.id.toString()}
+                        >
+                          {disease.disease_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <div>
+                    <span>
+                      Deskripsi :
+                    </span>
+                    <div className="border-2 rounded-md w-full h-full min-h-[150px] text-sm">
+                      {diseases.find((disease) => disease.id === selectedDisease)?.disease_desc ? diseases.find((disease) => disease.id === selectedDisease)?.disease_desc : "No Description"}
+                    </div>
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button type="submit">Save changes</Button>
+                  <Button type="submit">Add</Button>
                 </DialogFooter>
               </form>
             </DialogContent>

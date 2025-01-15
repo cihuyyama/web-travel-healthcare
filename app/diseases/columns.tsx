@@ -12,79 +12,12 @@ import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHe
 import { Textarea } from "@/components/ui/textarea";
 import useDelete from "@/hooks/useDelete";
 import { BASE_URL } from "@/types/BaseURL";
-import { Disease, Symptom } from "@/types/Disease";
+import { Disease, Prevention, Symptom, Treatment } from "@/types/Disease";
 import { CellContext, ColumnDef } from "@tanstack/react-table";
 import { Copy, Pencil } from "lucide-react";
+import Link from "next/link";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { toast } from "sonner";
-
-export const exampleData: Disease[] = [
-  {
-    id: 1,
-    disease_name: "DBD new",
-    disease_desc: "demam berdarah",
-    DiseaseSymptom: [
-      {
-        id: 2,
-        symptom_name: "Demam",
-        symptom_char: "terus menerus",
-      },
-      {
-        id: 3,
-        symptom_name: "mual",
-        symptom_char: "sakit perut",
-      },
-    ],
-    Treatment: [
-      {
-        id: 2,
-        disease_id: 1,
-        title: "judul new",
-        description: "deskripsinya",
-        created_at: "2024-01-22T01:13:10.362+07:00",
-        updated_at: "2024-01-22T01:13:10.362+07:00",
-      },
-      {
-        id: 3,
-        disease_id: 1,
-        title: "judul new",
-        description: "deskripsinya",
-        created_at: "2024-01-22T01:13:30.557+07:00",
-        updated_at: "2024-01-22T01:13:30.557+07:00",
-      },
-      {
-        id: 4,
-        disease_id: 1,
-        title: "judul",
-        description: "deskripsinya",
-        created_at: "2024-01-22T01:30:48.375+07:00",
-        updated_at: "2024-01-22T01:30:48.375+07:00",
-      },
-    ],
-    Prevention: [
-      {
-        id: 2,
-        disease_id: 1,
-        title: "judul",
-        description: "deskripsinya",
-        created_at: "2024-01-22T01:30:36.031+07:00",
-        updated_at: "2024-01-22T01:30:36.031+07:00",
-      },
-    ],
-    created_at: "2024-01-07T14:20:53.326+07:00",
-    updated_at: "2024-01-26T16:00:04.867+07:00",
-  },
-  {
-    id: 2,
-    disease_name: "Malaria",
-    disease_desc: "malaria",
-    DiseaseSymptom: [],
-    Treatment: [],
-    Prevention: [],
-    created_at: "2024-01-18T00:53:21.474+07:00",
-    updated_at: "2024-01-18T00:53:21.474+07:00",
-  },
-];
 
 export const diseaseColumns: ColumnDef<Disease>[] = [
   {
@@ -130,11 +63,11 @@ export const diseaseColumns: ColumnDef<Disease>[] = [
     cell: ({ row }) => {
       const disease = row.original
 
-      const [name, setName] = useState(disease.disease_name);
+      const [name, setPrev] = useState(disease.disease_name);
       const [desc, setDesc] = useState(disease.disease_desc);
 
       const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setName(e.target.value);
+        setPrev(e.target.value);
       };
       const handleDescChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         setDesc(e.target.value);
@@ -165,13 +98,13 @@ export const diseaseColumns: ColumnDef<Disease>[] = [
       }
 
       const onClickDelete = () => {
-        if(disease.DiseaseSymptom.length < 1){
+        if (disease.DiseaseSymptom.length < 1) {
           useDelete({
             endpoint: "/diseases",
             param: disease.id
           })
           location.reload();
-        }  else {
+        } else {
           toast.info(`Disease has symptoms, cannot be deleted`)
         }
       }
@@ -207,9 +140,25 @@ export const diseaseColumns: ColumnDef<Disease>[] = [
                   </SheetTrigger>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <Button className="w-full flex justify-start px-0" variant="ghost">
-                    Edit Disease over Disease
-                  </Button>
+                  <Link href={`/diseases/${disease.id}/symptoms`}>
+                    <Button className="w-full flex justify-start px-0" variant="ghost">
+                      Edit Disease Symptom
+                    </Button>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link href={`/diseases/${disease.id}/treatment`}>
+                    <Button className="w-full flex justify-start px-0" variant="ghost">
+                      Edit Disease Treatment
+                    </Button>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link href={`/diseases/${disease.id}/prevention`}>
+                    <Button className="w-full flex justify-start px-0" variant="ghost">
+                      Edit Disease Prevention
+                    </Button>
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
 
