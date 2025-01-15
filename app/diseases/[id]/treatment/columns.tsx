@@ -93,6 +93,11 @@ export const treatmentColumn: ColumnDef<Treatment>[] = [
                     .find(row => row.startsWith('token='))
                     ?.split('=')[1];
 
+                if (title === '' || description === '') {
+                    toast.error('Please fill in all fields');
+                    return;
+                }
+
                 try {
                     toast.promise(
                         fetch(`${BASE_URL}/treatments/${treatment.id}`, {

@@ -75,6 +75,12 @@ export const diseaseColumns: ColumnDef<Disease>[] = [
 
       const onSubmitEdit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        if (!name || !desc) {
+          toast.error('Please fill all fields');
+          return;
+        }
+
         const cookieValue = document.cookie.split('; ')
           .find(row => row.startsWith('token='))
           ?.split('=')[1];

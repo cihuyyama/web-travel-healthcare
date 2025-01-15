@@ -99,6 +99,11 @@ export function DataTable<TData, TValue>({
       .find(row => row.startsWith('token='))
       ?.split('=')[1];
 
+    if (!selectedDisease) {
+      toast.error('Please select a disease');
+      return;
+    }
+
     try {
       toast.promise(
         fetch(`${BASE_URL}/diseases/append`, {

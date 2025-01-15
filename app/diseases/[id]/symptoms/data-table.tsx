@@ -99,6 +99,11 @@ export function DataTable<TData, TValue>({
       .find(row => row.startsWith('token='))
       ?.split('=')[1];
 
+    if (!selectedSymptom) {
+      toast.error('Please fill in all fields');
+      return
+    }
+
     try {
       toast.promise(
         fetch(`${BASE_URL}/diseases/append/symptom`, {

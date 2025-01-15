@@ -70,6 +70,11 @@ export function DataTable<TData, TValue>({
   const onSubmitCreate = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (!title || !description) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+
     const cookieValue = document.cookie.split('; ')
       .find(row => row.startsWith('token='))
       ?.split('=')[1];

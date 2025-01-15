@@ -74,6 +74,11 @@ export function DataTable<TData, TValue>({
       .find(row => row.startsWith('token='))
       ?.split('=')[1];
 
+    if (!title || !description) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+
     try {
       toast.promise(
         fetch(`${BASE_URL}/treatments`, {
@@ -82,11 +87,11 @@ export function DataTable<TData, TValue>({
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${cookieValue}`,
           },
-          body: JSON.stringify({ 
+          body: JSON.stringify({
             "disease_id": parseInt(id),
             "title": title,
             "description": description,
-           })
+          })
         }),
         {
           loading: 'Saving...',
@@ -99,7 +104,7 @@ export function DataTable<TData, TValue>({
           error: 'Error Saving'
         }
       )
-      
+
     } catch (e) {
       console.error(e)
     }

@@ -100,6 +100,12 @@ export const endemicColumn: ColumnDef<Endemic>[] = [
 
             const onSubmitEdit = async (e: FormEvent<HTMLFormElement>) => {
                 e.preventDefault();
+
+                if (province === "" || risk === "" || score === 0) {
+                    toast.error("Please fill all the fields")
+                    return
+                }
+
                 await useUpdate({
                     endpoint: "/endemics",
                     param: endemic.id,
