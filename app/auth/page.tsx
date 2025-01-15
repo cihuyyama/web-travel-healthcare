@@ -54,9 +54,9 @@ function LoginPage() {
   }, []);
 
   return (
-    <section className="min-h-screen flex items-center justify-center">
-      <div className="bg-slate-100 flex rounded-2xl shadow-lg max-w-3xl p-5 items-center">
-        <div className="md:block hidden w-1/2 rounded-lg">
+    <section className="min-h-screen flex items-center justify-center bg-slate-200">
+      <div className="bg-white flex rounded-2xl shadow-lg max-w-3xl p-5 items-center">
+        {/* <div className="md:block hidden w-1/2 rounded-lg">
           <Image
             className="rounded-lg"
             width={468}
@@ -66,9 +66,9 @@ function LoginPage() {
             }
             alt=""
           />
-        </div>
+        </div> */}
 
-        <div className="md:w-1/2 px-8 md:px-16">
+        <div className="md:w-full px-8 md:px-16">
           <h2 className="font-bold text-3xl text-[#002D74]">Login</h2>
           <p className="text-s mt-4 text-[#002D74]">
             Travel Healthcare Admin Panel
